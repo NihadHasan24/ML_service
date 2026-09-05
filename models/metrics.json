@@ -19,6 +19,12 @@
   },
   "model": {
     "type": "RandomForestClassifier",
+    "parameters": {
+      "n_estimators": 400,
+      "min_samples_leaf": 2,
+      "max_features": "sqrt",
+      "class_weight": "balanced"
+    },
     "features": [
       "no_of_dependents",
       "income_annum",

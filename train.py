@@ -26,13 +26,13 @@ from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
-
 # %% 2. Project settings and dataset schema
 script_path = globals().get("__file__")
 PROJECT_ROOT = Path(script_path).resolve().parent if script_path else Path.cwd()
 DATA_PATH = PROJECT_ROOT / "dataset" / "loan_approval_dataset.csv"
 MODEL_PATH = PROJECT_ROOT / "models" / "loan_approval_model.joblib"
 METRICS_PATH = PROJECT_ROOT / "models" / "metrics.json"
+PIPELINE_CACHE = PROJECT_ROOT / ".pipeline_cache"
 
 TEST_SIZE = 0.20
 CV_FOLDS = 5
@@ -186,6 +186,7 @@ preprocessor = ColumnTransformer(
 classifier = RandomForestClassifier(
     n_estimators=400,
     min_samples_leaf=2,
+    max_features="sqrt",
     class_weight="balanced",
     random_state=RANDOM_STATE,
     n_jobs=1,
@@ -197,7 +198,8 @@ model = Pipeline(
     steps=[
         ("preprocessor", preprocessor),
         ("classifier", classifier),
-    ]
+    ],
+    memory=str(PIPELINE_CACHE),
 )
 
 
@@ -229,6 +231,7 @@ for metric_name in ("accuracy", "macro_f1", "roc_auc"):
 
 # %% 9. Fit the model and evaluate the untouched holdout set
 model.fit(X_train, y_train)
+fitted_classifier = model.named_steps["classifier"]
 
 predictions = model.predict(X_test)
 class_names = list(model.classes_)
@@ -270,7 +273,7 @@ print(
 # %% 10. Inspect which features the model uses most
 transformed_features = model.named_steps["preprocessor"].get_feature_names_out()
 feature_importance = sorted(
-    zip(transformed_features, classifier.feature_importances_, strict=True),
+    zip(transformed_features, fitted_classifier.feature_importances_, strict=True),
     key=lambda item: item[1],
     reverse=True,
 )
@@ -296,7 +299,7 @@ cross_validation_metrics = {
 
 metrics = {
     "data": {
-        "rows": int(len(data)),
+        "rows": len(data),
         "input_features": len(FEATURES),
         "duplicate_rows": int(data.duplicated().sum()),
         "target_distribution": {
@@ -305,17 +308,18 @@ metrics = {
         "negative_asset_values": negative_assets,
     },
     "split": {
-        "training_rows": int(len(X_train)),
-        "test_rows": int(len(X_test)),
+        "training_rows": len(X_train),
+        "test_rows": len(X_test),
         "test_size": TEST_SIZE,
         "random_state": RANDOM_STATE,
     },
     "model": {
         "type": "RandomForestClassifier",
         "parameters": {
-            "n_estimators": classifier.n_estimators,
-            "min_samples_leaf": classifier.min_samples_leaf,
-            "class_weight": classifier.class_weight,
+            "n_estimators": fitted_classifier.n_estimators,
+            "min_samples_leaf": fitted_classifier.min_samples_leaf,
+            "max_features": fitted_classifier.max_features,
+            "class_weight": fitted_classifier.class_weight,
         },
         "features": FEATURES,
         "target": TARGET_COLUMN,
