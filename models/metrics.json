@@ -1,0 +1,147 @@
+{
+  "data": {
+    "rows": 4269,
+    "input_features": 11,
+    "duplicate_rows": 0,
+    "target_distribution": {
+      "Approved": 2656,
+      "Rejected": 1613
+    },
+    "negative_asset_values": {
+      "residential_assets_value": 28
+    }
+  },
+  "split": {
+    "training_rows": 3415,
+    "test_rows": 854,
+    "test_size": 0.2,
+    "random_state": 42
+  },
+  "model": {
+    "type": "RandomForestClassifier",
+    "features": [
+      "no_of_dependents",
+      "income_annum",
+      "loan_amount",
+      "loan_term",
+      "cibil_score",
+      "residential_assets_value",
+      "commercial_assets_value",
+      "luxury_assets_value",
+      "bank_asset_value",
+      "education",
+      "self_employed"
+    ],
+    "target": "loan_status",
+    "classes": [
+      "Approved",
+      "Rejected"
+    ]
+  },
+  "cross_validation_on_training_partition": {
+    "folds": 5,
+    "accuracy": {
+      "mean": 0.9777452415812592,
+      "standard_deviation": 0.00670308822387092
+    },
+    "macro_f1": {
+      "mean": 0.9764446217306807,
+      "standard_deviation": 0.007073209513711646
+    },
+    "roc_auc": {
+      "mean": 0.9978422252621979,
+      "standard_deviation": 0.0007379728650824653
+    }
+  },
+  "holdout_test": {
+    "accuracy": 0.9742388758782201,
+    "balanced_accuracy": 0.9732206888107606,
+    "macro_f1": 0.9726473328674586,
+    "roc_auc": 0.9979185251263752,
+    "confusion_matrix": {
+      "label_order": [
+        "Rejected",
+        "Approved"
+      ],
+      "values": [
+        [
+          313,
+          10
+        ],
+        [
+          12,
+          519
+        ]
+      ]
+    },
+    "classification_report": {
+      "Rejected": {
+        "precision": 0.963076923076923,
+        "recall": 0.9690402476780186,
+        "f1-score": 0.9660493827160493,
+        "support": 323.0
+      },
+      "Approved": {
+        "precision": 0.9810964083175804,
+        "recall": 0.9774011299435028,
+        "f1-score": 0.9792452830188679,
+        "support": 531.0
+      },
+      "accuracy": 0.9742388758782201,
+      "macro avg": {
+        "precision": 0.9720866656972518,
+        "recall": 0.9732206888107606,
+        "f1-score": 0.9726473328674586,
+        "support": 854.0
+      },
+      "weighted avg": {
+        "precision": 0.974281076077847,
+        "recall": 0.9742388758782201,
+        "f1-score": 0.974254327752111,
+        "support": 854.0
+      }
+    }
+  },
+  "top_feature_importance": [
+    {
+      "feature": "numeric__cibil_score",
+      "importance": 0.8280423449917648
+    },
+    {
+      "feature": "numeric__loan_term",
+      "importance": 0.05062864802861817
+    },
+    {
+      "feature": "numeric__loan_amount",
+      "importance": 0.027556330017588577
+    },
+    {
+      "feature": "numeric__luxury_assets_value",
+      "importance": 0.016801396523657648
+    },
+    {
+      "feature": "numeric__commercial_assets_value",
+      "importance": 0.01644613834862184
+    },
+    {
+      "feature": "numeric__income_annum",
+      "importance": 0.01623006786500097
+    },
+    {
+      "feature": "numeric__residential_assets_value",
+      "importance": 0.015426521371421852
+    },
+    {
+      "feature": "numeric__bank_asset_value",
+      "importance": 0.014190905788234178
+    },
+    {
+      "feature": "numeric__no_of_dependents",
+      "importance": 0.007691701833754421
+    },
+    {
+      "feature": "categorical__self_employed_No",
+      "importance": 0.00193707324676625
+    }
+  ]
+}
