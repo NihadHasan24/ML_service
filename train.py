@@ -30,7 +30,7 @@ from sklearn.preprocessing import OneHotEncoder
 script_path = globals().get("__file__")
 PROJECT_ROOT = Path(script_path).resolve().parent if script_path else Path.cwd()
 DATA_PATH = PROJECT_ROOT / "dataset" / "loan_approval_dataset.csv"
-MODEL_PATH = PROJECT_ROOT / "models" / "loan_approval_model.joblib"
+MODEL_PATH = PROJECT_ROOT / "models" / "model.pkl"
 METRICS_PATH = PROJECT_ROOT / "models" / "metrics.json"
 PIPELINE_CACHE = PROJECT_ROOT / ".pipeline_cache"
 
@@ -160,9 +160,7 @@ print(f"Holdout test rows: {len(X_test)}")
 
 # %% 6. Build preprocessing steps
 # Imputation makes the saved pipeline robust to missing values in future input.
-numeric_pipeline = Pipeline(
-    steps=[("imputer", SimpleImputer(strategy="median"))]
-)
+numeric_pipeline = Pipeline(steps=[("imputer", SimpleImputer(strategy="median"))])
 
 categorical_pipeline = Pipeline(
     steps=[
@@ -289,9 +287,7 @@ cross_validation_metrics = {
     **{
         metric_name: {
             "mean": float(cv_scores[f"test_{metric_name}"].mean()),
-            "standard_deviation": float(
-                cv_scores[f"test_{metric_name}"].std()
-            ),
+            "standard_deviation": float(cv_scores[f"test_{metric_name}"].std()),
         }
         for metric_name in ("accuracy", "macro_f1", "roc_auc")
     },

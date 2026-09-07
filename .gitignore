@@ -27,6 +27,7 @@ htmlcov/
 # Generated model binaries
 models/*.joblib
 models/*.pkl
+!models/model.pkl
 
 # Build and packaging output
 build/

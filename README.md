@@ -34,12 +34,7 @@ python train.py
 ```
 
 If `.venv` already exists, skip the first command. In VS Code, choose
-`.venv\Scripts\python.exe` through **Python: Select Interpreter**. Use the same
-environment as the kernel when running `train.ipynb`.
-
-For a notebook version with separate code and explanation cells, open
-`train.ipynb` in VS Code, select the project Python environment as its kernel,
-and choose **Run All**. It produces the same model and metrics files.
+`.venv\Scripts\python.exe` through **Python: Select Interpreter**.
 
 The training program:
 
@@ -48,19 +43,51 @@ The training program:
 3. Makes a stratified 80/20 train/test split.
 4. Runs five-fold stratified cross-validation on the training partition.
 5. Fits a class-balanced random forest and evaluates the untouched holdout set.
-6. Writes the complete pipeline to `models/loan_approval_model.joblib` and its
+6. Writes the complete pipeline to `models/model.pkl` and its
    detailed results to `models/metrics.json`.
 
-`train.py` is divided into numbered `# %%` cells. In VS Code, install/enable the
-Python and Jupyter extensions, select your Python interpreter, and use the
-**Run Cell** link above each section. Run the cells from top to bottom. You can
-change the split size, cross-validation folds, and random seed in cell 2.
+`train.py` is divided into numbered `# %%` cells. Run the cells from top to
+bottom, or execute the complete training workflow with `python train.py`.
 
 If imports have yellow underlines, open the Command Palette with
 `Ctrl+Shift+P`, choose **Python: Select Interpreter**, and select the same
-environment in which you ran `python -m pip install -r requirements.txt`. For
-cell execution, select that environment as the notebook kernel as well, then
-run **Developer: Reload Window** if the diagnostics remain cached.
+environment in which you ran `python -m pip install -r requirements.txt`.
+
+## Run the API
+
+Train the model first, then start the FastAPI service:
+
+```powershell
+python train.py
+uvicorn main:app --reload
+```
+
+Open `http://127.0.0.1:8000/docs` for interactive API documentation. The
+service provides `GET /health` and `POST /predict` endpoints.
+
+Example prediction request:
+
+```json
+{
+  "no_of_dependents": 2,
+  "education": "Graduate",
+  "self_employed": "No",
+  "income_annum": 5000000,
+  "loan_amount": 12000000,
+  "loan_term": 10,
+  "cibil_score": 750,
+  "residential_assets_value": 5000000,
+  "commercial_assets_value": 2000000,
+  "luxury_assets_value": 8000000,
+  "bank_asset_value": 3000000
+}
+```
+
+## Test
+
+```powershell
+pytest
+```
 
 ## Use the trained model
 
@@ -70,7 +97,7 @@ Pass a pandas DataFrame with the same 11 feature columns used for training:
 import joblib
 import pandas as pd
 
-model = joblib.load("models/loan_approval_model.joblib")
+model = joblib.load("models/model.pkl")
 
 applicant = pd.DataFrame(
     [
