@@ -1,10 +1,7 @@
 """Train a model that predicts whether a loan is Approved or Rejected.
-
-VS Code recognizes each ``# %%`` section as a runnable Python cell. Run the
-cells from top to bottom, or run the entire file with ``python train.py``.
 """
 
-# %% 1. Import libraries
+# 1. Import libraries
 import json
 import warnings
 from pathlib import Path
@@ -26,7 +23,7 @@ from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
-# %% 2. Project settings and dataset schema
+# 2. Project settings and dataset schema
 script_path = globals().get("__file__")
 PROJECT_ROOT = Path(script_path).resolve().parent if script_path else Path.cwd()
 DATA_PATH = PROJECT_ROOT / "dataset" / "loan_approval_dataset.csv"
@@ -63,7 +60,7 @@ ASSET_FEATURES = [
 ]
 
 
-# %% 3. Load and clean the dataset
+# 3. Load and clean the dataset
 if not DATA_PATH.is_file():
     raise FileNotFoundError(f"Dataset not found: {DATA_PATH}")
 
@@ -89,7 +86,7 @@ print(f"Dataset loaded: {data.shape[0]} rows and {data.shape[1]} columns")
 print(data.head())
 
 
-# %% 4. Validate and understand the data
+# 4. Validate and understand the data
 if data.empty:
     raise ValueError("Dataset contains no rows.")
 if data[ID_COLUMN].isna().any():
@@ -140,7 +137,7 @@ print("\nNumeric summary:")
 print(data[NUMERIC_FEATURES].describe().T)
 
 
-# %% 5. Separate features and target, then create the holdout set
+# 5. Separate features and target, then create the holdout set
 # loan_id is deliberately excluded because it identifies a row rather than
 # describing an applicant.
 X = data[FEATURES]
@@ -158,7 +155,7 @@ print(f"Training rows: {len(X_train)}")
 print(f"Holdout test rows: {len(X_test)}")
 
 
-# %% 6. Build preprocessing steps
+# 6. Build preprocessing steps
 # Imputation makes the saved pipeline robust to missing values in future input.
 numeric_pipeline = Pipeline(steps=[("imputer", SimpleImputer(strategy="median"))])
 
@@ -180,7 +177,7 @@ preprocessor = ColumnTransformer(
 )
 
 
-# %% 7. Create the random-forest model and complete pipeline
+# 7. Create the random-forest model and complete pipeline
 classifier = RandomForestClassifier(
     n_estimators=400,
     min_samples_leaf=2,
@@ -201,7 +198,7 @@ model = Pipeline(
 )
 
 
-# %% 8. Cross-validate only on the training partition
+# 8. Cross-validate only on the training partition
 cross_validator = StratifiedKFold(
     n_splits=CV_FOLDS,
     shuffle=True,
@@ -227,7 +224,7 @@ for metric_name in ("accuracy", "macro_f1", "roc_auc"):
     print(f"  {metric_name}: {values.mean():.4f} (+/- {values.std():.4f})")
 
 
-# %% 9. Fit the model and evaluate the untouched holdout set
+# 9. Fit the model and evaluate the untouched holdout set
 model.fit(X_train, y_train)
 fitted_classifier = model.named_steps["classifier"]
 
@@ -268,7 +265,7 @@ print(
 )
 
 
-# %% 10. Inspect which features the model uses most
+# 10. Inspect which features the model uses most
 transformed_features = model.named_steps["preprocessor"].get_feature_names_out()
 feature_importance = sorted(
     zip(transformed_features, fitted_classifier.feature_importances_, strict=True),
@@ -281,7 +278,7 @@ for feature_name, importance in feature_importance[:10]:
     print(f"  {feature_name}: {importance:.4f}")
 
 
-# %% 11. Save the trained pipeline and its metrics
+# 11. Save the trained pipeline and its metrics
 cross_validation_metrics = {
     "folds": CV_FOLDS,
     **{
