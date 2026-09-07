@@ -33,9 +33,6 @@ python -m pip install -r requirements.txt
 python train.py
 ```
 
-If `.venv` already exists, skip the first command. In VS Code, choose
-`.venv\Scripts\python.exe` through **Python: Select Interpreter**.
-
 The training program:
 
 1. Cleans whitespace and validates the input schema and labels.
@@ -46,12 +43,7 @@ The training program:
 6. Writes the complete pipeline to `models/model.pkl` and its
    detailed results to `models/metrics.json`.
 
-`train.py` is divided into numbered `# %%` cells. Run the cells from top to
-bottom, or execute the complete training workflow with `python train.py`.
-
-If imports have yellow underlines, open the Command Palette with
-`Ctrl+Shift+P`, choose **Python: Select Interpreter**, and select the same
-environment in which you ran `python -m pip install -r requirements.txt`.
+Execute the complete training workflow with `python train.py`.
 
 ## Run the API
 
@@ -124,6 +116,4 @@ approval_probability = model.predict_proba(applicant)[0, approved_index]
 print(label, approval_probability)
 ```
 
-The output probability is a model estimate, not a guarantee. Before using the
-model in a real lending workflow, validate it on representative, time-separated
-data and perform fairness, calibration, explainability, and regulatory reviews.
+The output probability is a model estimate, not a guarantee.
